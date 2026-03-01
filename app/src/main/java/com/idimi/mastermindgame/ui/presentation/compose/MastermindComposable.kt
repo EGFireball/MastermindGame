@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.idimi.mastermindgame.BuildConfig
 import com.idimi.mastermindgame.R
 import com.idimi.mastermindgame.ui.presentation.MastermindViewModel
 
@@ -76,6 +77,19 @@ fun MastermindScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        // Debug Answer (Only visible in Debug builds for testers)
+        if (BuildConfig.DEBUG) {
+            Text(
+                text = "Answer: ${secretWord.word}",
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(24.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                fontWeight = FontWeight.Bold
+            )
+        }
+
         Text(
             text = stringResource(R.string.score, currentScore),
             modifier = Modifier

@@ -1,9 +1,17 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.compose)
+}
+
+// Load local.properties for securing property values
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.newInputStream())
 }
 
 android {
@@ -20,12 +28,27 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
+    signingConfigs {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            storeFile file("../mastermind-release-key.jks")
+            // Използваме стойностите от local.properties с празен стринг по подразбиране за безопасност
+            storePassword localProperties.getProperty("RELEASE_STORE_PASSWORD") ?: ""
+            keyAlias "mastermind-alias"
+            keyPassword localProperties.getProperty("RELEASE_KEY_PASSWORD") ?: ""
         }
     }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true // Включваме R8 за оптимизация и защита на кода
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+        debug {
+            signingConfig signingConfigs.debug
+        }
+    }
+    
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21
@@ -33,12 +56,13 @@ android {
 
     kotlin {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget = JvmTarget.JVM_21
         }
     }
 
     buildFeatures {
         compose true
+        buildConfig true
     }
 
     packaging {
@@ -59,25 +83,25 @@ android {
 dependencies {
 
     // Jetpack compose
-    implementation platform(libs.androidx.compose.bom)
-    androidTestImplementation platform(libs.androidx.compose.bom)
+    implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
 
-    implementation libs.androidx.compose.ui
-    implementation libs.androidx.compose.foundation
-    implementation libs.androidx.compose.material3
-    implementation libs.androidx.compose.material.icons.core
-    implementation libs.androidx.compose.material.icons.extended
-    implementation libs.androidx.activity.compose
-    implementation libs.androidx.lifecycle.runtime.ktx
-    implementation libs.androidx.compose.ui.graphics
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.core)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.runtime)
 
-    implementation libs.androidx.core.ktx
+    implementation(libs.androidx.core.ktx)
 
     // Room
     implementation(libs.androidx.room.runtime)
-    implementation libs.androidx.room.ktx
+    implementation(libs.androidx.room.ktx)
 
     ksp(libs.androidx.room.compiler)
 
@@ -93,8 +117,8 @@ dependencies {
     implementation(libs.timber)
 
     // Debugging
-    debugImplementation libs.androidx.compose.ui.tooling
-    debugImplementation libs.androidx.compose.ui.test.manifest
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // Testing
     testImplementation(libs.junit.jupiter.api)
@@ -107,7 +131,7 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.truth)
     testImplementation(libs.mockk)
-    androidTestImplementation libs.mockk.android
+    androidTestImplementation(libs.mockk.android)
 
     // Android tests
     androidTestImplementation(libs.androidx.core)

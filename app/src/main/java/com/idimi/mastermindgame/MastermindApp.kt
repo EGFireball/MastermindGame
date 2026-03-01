@@ -18,6 +18,8 @@ class MastermindApp: Application() {
             androidContext(this@MastermindApp)
             modules(listOf(appModule, databaseModule))
         }
-        Timber.plant(Timber.DebugTree())
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
     }
 }
