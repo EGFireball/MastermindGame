@@ -111,7 +111,6 @@ dependencies {
 
     // Android tests
     androidTestImplementation(libs.androidx.core)
-    androidTestImplementation(libs.core.ktx)
     androidTestImplementation(libs.androidx.runner)
     androidTestImplementation(libs.androidx.rules)
     androidTestImplementation(libs.junit.jupiter.api)
@@ -119,7 +118,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.test.manifest)
     androidTestImplementation(libs.android.test.core)
-    androidTestRuntimeOnly(libs.android.test.runner)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
 }

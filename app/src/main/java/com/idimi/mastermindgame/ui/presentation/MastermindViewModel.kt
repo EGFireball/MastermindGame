@@ -32,7 +32,7 @@ class MastermindViewModel(
     private val checkMastermindUseCase: CheckMastermindUseCase
 ) : ViewModel() {
 
-    private val _secretWord = MutableStateFlow<MastermindWord>(MastermindWord("", ""))
+    private val _secretWord = MutableStateFlow(MastermindWord("", ""))
     val secretWord = _secretWord.asStateFlow()
 
     private val _highScores = MutableStateFlow<List<MastermindResult>>(emptyList())
@@ -79,13 +79,13 @@ class MastermindViewModel(
 
     fun getHighScores()  {
         viewModelScope.launch {
-            _highScores.value = getHallOfFameDataUseCase.invoke()
+            _highScores.value = getHallOfFameDataUseCase()
         }
     }
 
     fun saveScore(playerName: String, score: Int) {
         viewModelScope.launch {
-            saveResultsUseCase.invoke(
+            saveResultsUseCase(
                 MastermindResult(
                     name = playerName,
                     score = score
@@ -95,7 +95,7 @@ class MastermindViewModel(
     }
 
     fun checkMastermindLogic(guess: String, secret: String): List<Color> {
-        return checkMastermindUseCase.invoke(guess, secret).map {
+        return checkMastermindUseCase(guess, secret).map {
             when (it) {
                 GuessResult.NONE -> Color.LightGray
                 GuessResult.CORRECT -> NeonGreen
@@ -124,7 +124,7 @@ class MastermindViewModel(
     }
 
     sealed class GameEvent {
-        object OnVictory : GameEvent()
-        object OnGameOver : GameEvent()
+        data object OnVictory : GameEvent()
+        data object OnGameOver : GameEvent()
     }
 }

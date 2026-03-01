@@ -461,5 +461,4 @@ object GameDictionary {
         "zoom" to "To move or travel very quickly."
     )
 
-    val words = wordsWithHints.keys.toList()
 }

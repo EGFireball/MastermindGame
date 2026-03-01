@@ -18,7 +18,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,19 +41,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
 import com.idimi.mastermindgame.R
 import com.idimi.mastermindgame.ui.presentation.MastermindViewModel
-import com.idimi.mastermindgame.ui.presentation.MastermindViewModel.GameEvent
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MastermindScreen(
     viewModel: MastermindViewModel,
     onGameOver: () -> Unit,
-    onSuccess: () -> Unit,
-    onBack: () -> Unit
+    onSuccess: () -> Unit
 ) {
     val secretWord by viewModel.secretWord.collectAsStateWithLifecycle()
 

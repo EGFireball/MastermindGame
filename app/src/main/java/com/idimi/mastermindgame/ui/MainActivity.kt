@@ -1,4 +1,4 @@
-package com.idimi.mastermindgame
+package com.idimi.mastermindgame.ui
 
 import android.content.pm.ActivityInfo
 import android.media.MediaPlayer
@@ -26,6 +26,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.idimi.mastermindgame.R
 import com.idimi.mastermindgame.ui.presentation.MastermindViewModel
 import com.idimi.mastermindgame.ui.theme.MastermindGameTheme
 import com.idimi.mastermindgame.ui.presentation.compose.GameOverScreen
@@ -41,6 +42,8 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MastermindViewModel by viewModel()
     private var mediaPlayer: MediaPlayer? = null
+    private var victoryMedia: MediaPlayer? = null
+    private var gameOverMedia: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,8 +52,8 @@ class MainActivity : ComponentActivity() {
             isLooping = true
         }
 
-        val victoryMedia = MediaPlayer.create(this, R.raw.victory)
-        val gameOverMedia = MediaPlayer.create(this, R.raw.game_over)
+        victoryMedia = MediaPlayer.create(this, R.raw.victory)
+        gameOverMedia = MediaPlayer.create(this, R.raw.game_over)
 
         // Handling game events
         lifecycleScope.launch {
@@ -58,17 +61,21 @@ class MainActivity : ComponentActivity() {
                 viewModel.gameEvents.collect { event ->
                     when (event) {
                         is MastermindViewModel.GameEvent.OnVictory -> {
-                            handleMusicTransition(
-                                mediaToPlay = victoryMedia,
-                                mediaToStop = mediaPlayer!!
-                            )
+                            victoryMedia?.let {
+                                handleMusicTransition(
+                                    mediaToPlay = it,
+                                    mediaToStop = mediaPlayer!!
+                                )
+                            }
                         }
 
                         MastermindViewModel.GameEvent.OnGameOver -> {
-                            handleMusicTransition(
-                                mediaToPlay = gameOverMedia,
-                                mediaToStop = mediaPlayer!!
-                            )
+                            gameOverMedia?.let {
+                                handleMusicTransition(
+                                    mediaToPlay = it,
+                                    mediaToStop = mediaPlayer!!
+                                )
+                            }
                         }
                     }
                 }
@@ -124,13 +131,17 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
         mediaPlayer?.release()
         mediaPlayer = null
+        victoryMedia?.release()
+        victoryMedia = null
+        gameOverMedia?.release()
+        gameOverMedia = null
     }
 
     private fun handleMusicTransition(mediaToPlay: MediaPlayer, mediaToStop: MediaPlayer) {
         mediaToStop.pause()
 
         mediaToPlay.apply {
-            seekTo(0) // Връщаме в началото за всеки случай
+            seekTo(0)
             start()
 
             setOnCompletionListener {
@@ -151,6 +162,7 @@ fun MainScreen(
     val navController = rememberNavController()
 
     NavHost(
+        modifier = modifier,
         navController = navController,
         startDestination = Screen.Menu.route
     ) {
@@ -170,15 +182,14 @@ fun MainScreen(
                 }},
                 onSuccess = { navController.navigate(Screen.Success.route) {
                     popUpTo(Screen.Menu.route)
-                }},
-                onBack = { navController.popBackStack() }
+                }}
             )
         }
 
         composable(Screen.HallOfFame.route) {
             HallOfFameScreen(
-                viewModel = viewModel,
-                onBack = { navController.popBackStack() })
+                viewModel = viewModel
+            )
         }
 
         composable(Screen.Success.route) {

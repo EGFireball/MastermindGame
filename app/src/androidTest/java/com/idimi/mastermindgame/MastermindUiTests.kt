@@ -9,6 +9,10 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.idimi.mastermindgame.domain.model.MastermindWord
+import com.idimi.mastermindgame.domain.usecases.CheckMastermindUseCase
+import com.idimi.mastermindgame.domain.usecases.GetHallOfFameDataUseCase
+import com.idimi.mastermindgame.domain.usecases.GetSecretWordUseCase
+import com.idimi.mastermindgame.domain.usecases.SaveResultsUseCase
 import com.idimi.mastermindgame.ui.presentation.MastermindViewModel
 import com.idimi.mastermindgame.ui.presentation.compose.GameOverScreen
 import com.idimi.mastermindgame.ui.presentation.compose.HallOfFameScreen
@@ -18,6 +22,7 @@ import com.idimi.mastermindgame.ui.presentation.compose.SuccessScreen
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,6 +32,23 @@ class MastermindUiTests {
 
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    private val getSecretWordUseCase = mockk<GetSecretWordUseCase>(relaxed = true)
+    private val getHallOfFameDataUseCase = mockk<GetHallOfFameDataUseCase>(relaxed = true)
+    private val saveResultsUseCase = mockk<SaveResultsUseCase>(relaxed = true)
+    private val checkMastermindUseCase = CheckMastermindUseCase()
+
+    private lateinit var viewModel: MastermindViewModel
+
+    @Before
+    fun setup() {
+        viewModel = MastermindViewModel(
+            getSecretWordUseCase,
+            getHallOfFameDataUseCase,
+            saveResultsUseCase,
+            checkMastermindUseCase
+        )
+    }
 
     // 1. MenuScreen test - Check for buttons and navigation
     @Test
@@ -50,7 +72,9 @@ class MastermindUiTests {
     fun successScreenNewGameClickTriggersCallback() {
         var clicked = false
         composeTestRule.setContent {
-            SuccessScreen(newGame = { clicked = true }, onMenu = {})
+            SuccessScreen(
+                viewModel = viewModel, newGame = { clicked = true }, onMenu = {}
+            )
         }
 
         val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -64,7 +88,9 @@ class MastermindUiTests {
     @Test
     fun gameOverScreenDisplaysErrorText() {
         composeTestRule.setContent {
-            GameOverScreen(onRetry = {}, onMenu = {})
+            GameOverScreen(
+                viewModel = viewModel, onRetry = {}, onMenu = {}
+            )
         }
 
         val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -87,7 +113,7 @@ class MastermindUiTests {
         every { viewModel.calculateScore(any(), any()) } returns 0
 
         composeTestRule.setContent {
-            MastermindScreen(viewModel, {}, {}, {})
+            MastermindScreen(viewModel, {}, {})
         }
 
         // Ensure LaunchedEffects have finished their first pass
@@ -108,7 +134,7 @@ class MastermindUiTests {
         every { viewModel.highScores.value } returns emptyList()
 
         composeTestRule.setContent {
-            HallOfFameScreen(viewModel, onBack = {})
+            HallOfFameScreen(viewModel)
         }
 
         val context = InstrumentationRegistry.getInstrumentation().targetContext

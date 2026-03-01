@@ -13,7 +13,6 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
@@ -34,7 +33,7 @@ class MastermindGameTests {
     private val checkMastermindUseCase = CheckMastermindUseCase()
 
     private lateinit var viewModel: MastermindViewModel
-    private val testDispatcher = StandardTestDispatcher()
+//    private val testDispatcher = StandardTestDispatcher()
 
     @BeforeEach
     fun setup() {
@@ -66,11 +65,12 @@ class MastermindGameTests {
     }
 
     @Test
-    fun whenGuessIsEntirelyWrongReturnAllINCORRECT() {
+    fun whenGuessIsEntirelyWrongReturnAllIncorrect() {
         val result = checkMastermindUseCase("ZZZZ", "ABCD")
         assertTrue(result.all { it == GuessResult.INCORRECT })
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun startNewGameUpdatesSecretWord() = runTest {
         val mockWord = MastermindWord("JAVA", "Coding language")
@@ -86,6 +86,7 @@ class MastermindGameTests {
         assertEquals(mockWord, viewModel.secretWord.value)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun timerTriggersOnTimeUpWhenReachingZero() = runTest {
         var isTimeUpCalled = false
@@ -93,7 +94,7 @@ class MastermindGameTests {
         // Start the timer
         viewModel.startTimer { isTimeUpCalled = true }
 
-        // We have 60 seconds but we will fast forward 61 seconds.
+        // We have 60 seconds, but we will fast-forward 61 seconds.
         advanceTimeBy(61_000)
 
         // Be sure that last task has been performed
