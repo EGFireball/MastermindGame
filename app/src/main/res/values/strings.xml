@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Mastermind game</string>
+    <string name="mastermind">MASTERMIND</string>
+    <string name="new_game">NEW GAME</string>
+    <string name="hall_of_fame">HALL OF FAME</string>
+    <string name="quit">QUIT</string>
+    <string name="check">CHECK</string>
+    <string name="score">Score: %1$d</string>
+    <string name="save_score">SAVE SCORE</string>
+    <string name="your_score">Your score: %1$d</string>
+    <string name="skip">SKIP</string>
+    <string name="save">SAVE</string>
+    <string name="back_to_menu">BACK TO MENU</string>
+    <string name="try_again">TRY AGAIN</string>
+    <string name="game_over">GAME OVER</string>
+    <string name="victory">VICTORY</string>
+</resources>
