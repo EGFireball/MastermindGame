@@ -15,43 +15,43 @@ if (localPropertiesFile.exists()) {
 }
 
 android {
-    namespace 'com.idimi.mastermindgame'
-    compileSdk 36
+    namespace = 'com.idimi.mastermindgame'
+    compileSdk = 36
 
     defaultConfig {
-        applicationId "com.idimi.mastermindgame"
-        minSdk 30
-        targetSdk 36
-        versionCode 1
-        versionName "1.0"
+        applicationId = "com.idimi.mastermindgame"
+        minSdk = 30
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
         release {
-            storeFile file("../mastermind-release-key.jks")
+            storeFile = file("../mastermind-release-key.jks")
             // Използваме стойностите от local.properties с празен стринг по подразбиране за безопасност
-            storePassword localProperties.getProperty("RELEASE_STORE_PASSWORD") ?: ""
-            keyAlias "mastermind-alias"
-            keyPassword localProperties.getProperty("RELEASE_KEY_PASSWORD") ?: ""
+            storePassword = localProperties.getProperty("RELEASE_STORE_PASSWORD") ?: ""
+            keyAlias = "mastermind-alias"
+            keyPassword = localProperties.getProperty("RELEASE_KEY_PASSWORD") ?: ""
         }
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
-            minifyEnabled true // Включваме R8 за оптимизация и защита на кода
+            signingConfig = signingConfigs.release
+            minifyEnabled = true // Включваме R8 за оптимизация и защита на кода
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
         debug {
-            signingConfig signingConfigs.debug
+            signingConfig = signingConfigs.debug
         }
     }
     
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlin {
@@ -61,8 +61,8 @@ android {
     }
 
     buildFeatures {
-        compose true
-        buildConfig true
+        compose = true
+        buildConfig = true
     }
 
     packaging {
@@ -76,6 +76,11 @@ android {
     testOptions {
         unitTests.all {
             useJUnitPlatform()
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                showStandardStreams = true
+                exceptionFormat = "full"
+            }
         }
     }
 }

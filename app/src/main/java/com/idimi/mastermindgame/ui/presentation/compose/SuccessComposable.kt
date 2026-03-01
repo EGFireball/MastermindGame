@@ -39,7 +39,7 @@ fun SuccessScreen(
         Text(
             text = stringResource(R.string.victory),
             style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.secondaryContainer,
+            color = MaterialTheme.colorScheme.tertiary,
             fontWeight = FontWeight.Black
         )
 

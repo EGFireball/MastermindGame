@@ -18,8 +18,9 @@ private val DarkColorScheme = darkColorScheme(
     surface = CardNavy,
     onPrimary = Color.Black,
     onPrimaryContainer = Color.White,
-    tertiary = NeonGreen,
+    tertiary = RetroYellow,
     secondaryContainer = NeonOrange,
+    onSecondaryContainer = NeonOrange,
     onBackground = Color.White,
     onSurface = Color.White,
     error = NeonRed
@@ -27,15 +28,16 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = PowerGreen,
-    secondary = RetroBlue,
+    secondary = RetroCyan,
     background = NeonGreen,
-    surface = RetroBlue,
+    surface = RetroGreen,
     onPrimary = Color.White,
     onPrimaryContainer = Color.Black,
-    tertiary = NeonGreen,
+    tertiary = NeonOrange,
     secondaryContainer = NeonOrange,
-    onBackground = gray,
-    onSurface = gray,
+    onSecondaryContainer = Gray,
+    onBackground = Gray,
+    onSurface = Gray,
     error = NeonRed
 )
 

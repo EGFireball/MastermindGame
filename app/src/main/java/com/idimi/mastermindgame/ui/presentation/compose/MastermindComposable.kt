@@ -2,6 +2,7 @@ package com.idimi.mastermindgame.ui.presentation.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -44,6 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.idimi.mastermindgame.BuildConfig
 import com.idimi.mastermindgame.R
 import com.idimi.mastermindgame.ui.presentation.MastermindViewModel
+import com.idimi.mastermindgame.ui.theme.DeepSpace
 
 @Composable
 fun MastermindScreen(
@@ -53,8 +61,16 @@ fun MastermindScreen(
 ) {
     val secretWord by viewModel.secretWord.collectAsStateWithLifecycle()
 
+    val isDarkTheme = isSystemInDarkTheme()
+
     var userGuess by remember { mutableStateOf(listOf("", "", "", "")) }
-    var feedbackColors by remember { mutableStateOf(List(4) { Color.LightGray }) }
+    var feedbackColors by remember { mutableStateOf(List(4) {
+        if (isDarkTheme) {
+            DeepSpace
+        } else {
+            Color.LightGray
+        }
+    }) }
     val timeLeft by viewModel.timeLeft.collectAsStateWithLifecycle()
 
     val correctLettersCount = feedbackColors.count { it == Color(0xFF4CAF50) }
@@ -117,7 +133,7 @@ fun MastermindScreen(
                 text = secretWord.hint,
                 modifier = Modifier.padding(horizontal = 12.dp),
                 style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.secondaryContainer,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Medium,
             )
@@ -143,6 +159,14 @@ fun MastermindScreen(
                                 newList[index] = char.uppercase()
                                 userGuess = newList
                                 if (char.isNotEmpty() && index < 3) focusRequesters[index + 1].requestFocus()
+                            }
+                        },
+                        onBackspace = {
+                            if (index > 0) {
+                                val newList = userGuess.toMutableList()
+                                newList[index - 1] = ""
+                                userGuess = newList
+                                focusRequesters[index - 1].requestFocus()
                             }
                         }
                     )
@@ -222,7 +246,7 @@ fun MastermindScreen(
                         textStyle = TextStyle(
                             fontSize = 18.sp,
                             textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.tertiary
                         ),
                         singleLine = true
                     )
@@ -270,7 +294,8 @@ fun LetterInputField(
     value: String,
     focusRequester: FocusRequester,
     testTag: String,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    onBackspace: () -> Unit
 ) {
     Box(
         modifier = modifier,
@@ -281,6 +306,14 @@ fun LetterInputField(
             onValueChange = onValueChange,
             modifier = Modifier
                 .focusRequester(focusRequester)
+                .onPreviewKeyEvent { event ->
+                    if (event.key == Key.Backspace && event.type == KeyEventType.KeyDown && value.isEmpty()) {
+                        onBackspace()
+                        true
+                    } else {
+                        false
+                    }
+                }
                 .fillMaxSize()
                 .testTag(testTag),
             textStyle = TextStyle(
@@ -289,6 +322,7 @@ fun LetterInputField(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             ),
+            cursorBrush = SolidColor(MaterialTheme.colorScheme.onPrimaryContainer),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             singleLine = true,
             decorationBox = { innerTextField ->

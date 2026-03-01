@@ -52,29 +52,27 @@ fun HallOfFameScreen(
         viewModel.getHighScores()
     }
 
-    Scaffold(
-        containerColor = Color.Transparent,
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding)
-        ) {
-            item { Spacer(modifier = Modifier.height(20.dp)) }
-            item {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.hall_of_fame),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-            item { Spacer(modifier = Modifier.height(20.dp)) }
-            itemsIndexed(highScores) { index, result ->
-                HighScoreItem(rank = index + 1, result = result)
-                Spacer(modifier = Modifier.height(4.dp))
-            }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Transparent)
+    ) {
+        item { Spacer(modifier = Modifier.height(20.dp)) }
+        item {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.hall_of_fame),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+        item { Spacer(modifier = Modifier.height(20.dp)) }
+        itemsIndexed(highScores) { index, result ->
+            HighScoreItem(rank = index + 1, result = result)
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
